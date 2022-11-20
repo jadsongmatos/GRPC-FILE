@@ -52,7 +52,7 @@ async function main() {
         promises.push(send(i, size_block, position))
     }
 
-    promises.push(send(n_blocks, last_position, last_size))
+    promises.push(send(n_blocks,  last_size,last_position))
 
     await Promise.all(promises).finally(async () => {
         console.log("finally")
