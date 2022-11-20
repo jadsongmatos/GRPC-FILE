@@ -15,7 +15,8 @@ const packageDefinition = protoLoader.loadSync("./file_uploader.proto", {
     oneofs: true
 });
 const fileUploaderProto = grpc.loadPackageDefinition(packageDefinition).FileUploaderPackage;
-// define file upload method
+
+// define file endFile method
 const endFile = (call, callback) => {
     logger.debug(`gRPC ${call.call.handler.path}`);
 
@@ -25,15 +26,18 @@ const endFile = (call, callback) => {
         console.log("endFile", payload)
 
         name = payload.name;
-        payload.hash_blocks.map(e => {
-            const dirPath = path.join(__dirname, '/tmp',e);
-            console.log()
+        payload.hash_blocks.map(async (e) => {
+            const block_path = path.join(__dirname, '/tmp', e + ".bin");
+            const contents = fs.readFileSync(block_path)
+            fs.appendFileSync(`./tmp/${name}`, contents)
+            
 
-            fsp.readFile(`./tmp/${e}.bin`).then(data => {
-                fs.appendFileSync(`./tmp/${name}`, data);
-            });
-            //fs.unlinkSync(`./tmp/${e}.bin`);
             logger.debug(e, `./tmp/${name}`);
+        })
+
+        payload.hash_blocks.map(async (e) => {
+            const block_path = path.join(__dirname, '/tmp', e + ".bin");
+            //fsp.unlink(block_path)
         })
 
     });
