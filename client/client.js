@@ -24,7 +24,7 @@ var stats = fs.statSync(file_path)
 var filehandle = null;
 
 const n_blocks = Math.round(stats.size / size_block)
-console.log("n_blocks", n_blocks,stats.size)
+console.log("n_blocks", n_blocks, stats.size)
 
 var buff_blocks = new Array(n_blocks)
 
@@ -44,13 +44,13 @@ async function main() {
     let position = 0;
     for (let i = 0; i < n_blocks; i++) {
         position = Math.round(i * size_block)
-        promises.push(send(i,size_block,position))
+        promises.push(send(i, size_block, position))
     }
 
     let last_position = Math.round(n_blocks * size_block)
-    let last_size = stats.size - last_position
-    position = Math.round(n_blocks * size_block)
-    promises.push(send(n_blocks,last_size,position))
+    let last_size = stats.size - last_position - 1
+
+    promises.push(send(n_blocks, last_position, last_size))
 
     await Promise.all(promises).finally(async () => {
         console.log("finally")
@@ -80,10 +80,10 @@ async function main() {
     })
 }
 
-async function send(i,size_block,position) {
+async function send(i, size_block, position) {
     return new Promise(async (resolve, reject) => {
-        
-        console.log("block", i, position,size_block)
+
+        console.log("block", i, size_block, position)
         // Calling the filehandle.read() method
         try {
             await filehandle.read(buff_blocks[i],
@@ -107,16 +107,16 @@ async function send(i,size_block,position) {
                 hash: hash_blocks[i]
             });
 
-            console.log("buf",i,buff_blocks[i].toString()); 
+            console.log("buf", i, buff_blocks[i].toString());
             serviceCall.write({
                 chunk: Uint8Array.from(buff_blocks[i])
             });
 
             serviceCall.end(() => resolve());
-        } catch(err) {
-            console.log("send",err)
+        } catch (err) {
+            console.log("send", err)
         }
-       
+
 
     })
 }
