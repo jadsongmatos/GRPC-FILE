@@ -28,9 +28,14 @@ console.log("n_blocks", n_blocks, stats.size)
 
 var buff_blocks = new Array(n_blocks)
 
-for (let i = 0; i <= n_blocks; i++) {
+for (let i = 0; i < n_blocks; i++) {
     buff_blocks[i] = new Buffer.alloc(size_block);
 }
+
+let last_position = Math.round(n_blocks * size_block)
+let last_size = stats.size - last_position -1
+
+buff_blocks[n_blocks] = new Buffer.alloc(last_size);
 
 let hash_blocks = new Array(n_blocks)
 
@@ -46,9 +51,6 @@ async function main() {
         position = Math.round(i * size_block)
         promises.push(send(i, size_block, position))
     }
-
-    let last_position = Math.round(n_blocks * size_block)
-    let last_size = stats.size - last_position - 1
 
     promises.push(send(n_blocks, last_position, last_size))
 
