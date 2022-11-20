@@ -1,0 +1,29 @@
+syntax = "proto3";
+package FileUploaderPackage;
+
+message BlockUploadRequest {
+    oneof data {
+        string hash = 1;
+        bytes chunk = 2;
+    };
+}
+
+message BlockUploadResponse {
+    string id = 1;
+}
+
+message FileEndRequest{
+
+    string name = 1;
+    repeated string hash_blocks = 2;
+ 
+}
+
+message FileEndResponse{
+    string path = 1;
+}
+
+service FileUploaderService {
+    rpc endFile(stream FileEndRequest) returns (FileEndResponse) {}
+    rpc uploadBlock(stream BlockUploadRequest) returns (BlockUploadResponse) {}
+}
